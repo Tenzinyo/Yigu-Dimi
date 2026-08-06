@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import FilterBar from '../components/FilterBar.astro';
+import { getFeed } from '../utils/content';
+
+const feed = await getFeed();
+---
+
+<BaseLayout
+  title="Yigu Dimi"
+  description="Daily blogs, journal entries, videos, and artwork — all in one feed."
+>
+  <section class="panel hero speed-lines wrap">
+    <h1>Yigu Dimi</h1>
+    <p class="hero__tagline">blogs &middot; journal &middot; video &middot; art</p>
+  </section>
+
+  <section class="wrap feed-section">
+    {feed.length > 0 ? (
+      <>
+        <FilterBar targetId="feed-grid" />
+        <div id="feed-grid" class="grid">
+          {feed.map((item) => <PostCard item={item} />)}
+        </div>
+      </>
+    ) : (
+      <p class="empty-state">Nothing published yet — head to <a href="/admin/">/admin</a> to write the first post.</p>
+    )}
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    margin-top: 2rem;
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+
+  .hero__tagline {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .feed-section {
+    padding-block: 2.5rem 3rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 3rem 0;
+  }
+</style>
+
+<!--
+  Netlify Identity invite/confirmation/recovery emails link to this domain's
+  root with a URL fragment (e.g. "/#invite_token=..."). This script only
+  needs to live on the homepage to catch those and hand off to /admin/ —
+  it's not needed on every page.
+-->
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js" is:inline></script>
+<script is:inline>
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on('init', (user) => {
+      if (!user) {
+        window.netlifyIdentity.on('login', () => {
+          document.location.href = '/admin/';
+        });
+      }
+    });
+  }
+</script>

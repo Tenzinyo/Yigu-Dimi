@@ -1,0 +1,111 @@
+---
+import type { FeedItem } from '../utils/content';
+import { typeLabels } from '../utils/content';
+import TagList from './TagList.astro';
+
+interface Props {
+  item: FeedItem;
+}
+
+const { item } = Astro.props;
+
+const dateLabel = item.date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+---
+
+<article class="panel card" data-type={item.type}>
+  <a href={item.href} class="card__media-link">
+    {
+      item.image ? (
+        <img class="card__media" src={item.image} alt={item.imageAlt ?? ''} loading="lazy" />
+      ) : (
+        <div class="card__media card__media--empty halftone" aria-hidden="true">
+          <span>{typeLabels[item.type]}</span>
+        </div>
+      )
+    }
+  </a>
+  <div class="card__body">
+    <div class="card__meta">
+      <span class:list={['badge', `badge-${item.type}`]}>{typeLabels[item.type]}</span>
+      <time datetime={item.date.toISOString()}>{dateLabel}</time>
+    </div>
+    <h3 class="card__title">
+      <a href={item.href}>{item.title}</a>
+    </h3>
+    {item.excerpt && <p class="card__excerpt">{item.excerpt}</p>}
+    <TagList tags={item.tags} />
+  </div>
+</article>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .card__media-link {
+    display: block;
+  }
+
+  .card__media {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-bottom: var(--panel-border-width) solid var(--border);
+  }
+
+  .card__media--empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-inset);
+  }
+
+  .card__media--empty span {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+
+  .card__body {
+    padding: 1rem 1.1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+  }
+
+  .card__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .card__title {
+    margin: 0;
+    font-size: 1.35rem;
+  }
+
+  .card__title a {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .card__title a:hover {
+    color: var(--accent);
+  }
+
+  .card__excerpt {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+</style>

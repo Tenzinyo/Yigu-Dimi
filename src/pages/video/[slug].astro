@@ -1,0 +1,119 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TagList from '../../components/TagList.astro';
+import { getEmbedUrl } from '../../utils/video';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('video', ({ data }) => !data.draft);
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+interface Props {
+  entry: CollectionEntry<'video'>;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const embedUrl = getEmbedUrl(entry.data.videoUrl);
+
+const dateLabel = entry.data.date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout
+  title={entry.data.title}
+  description={entry.data.description ?? entry.data.title}
+  image={entry.data.thumbnail}
+  type="article"
+>
+  <article class="wrap post">
+    <a href="/video/" class="post__back">&larr; All videos</a>
+
+    <header class="panel post__header speed-lines">
+      <span class="badge badge-video">Video</span>
+      <h1>{entry.data.title}</h1>
+      <time datetime={entry.data.date.toISOString()} class="post__date">{dateLabel}</time>
+      <TagList tags={entry.data.tags} />
+    </header>
+
+    {embedUrl ? (
+      <div class="video-embed panel-flat">
+        <iframe
+          src={embedUrl}
+          title={entry.data.title}
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        />
+      </div>
+    ) : (
+      <p class="video-fallback panel-flat">
+        Couldn't embed this link directly.
+        <a href={entry.data.videoUrl} target="_blank" rel="noopener noreferrer">Watch it here &rarr;</a>
+      </p>
+    )}
+
+    <div class="panel-flat post__body">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .post {
+    padding-block: 2rem 3rem;
+    max-width: 800px;
+  }
+
+  .post__back {
+    display: inline-block;
+    margin-bottom: 1.25rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .post__header {
+    padding: 1.75rem 1.75rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .post__header h1 {
+    margin-top: 0.5rem;
+  }
+
+  .post__date {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .video-embed {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  .video-embed iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .video-fallback {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .post__body {
+    padding: 1.75rem 2rem 2.25rem;
+  }
+</style>

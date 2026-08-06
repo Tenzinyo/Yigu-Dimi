@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page not found" description="This page doesn't exist on Yigu Dimi.">
+  <section class="wrap not-found">
+    <div class="panel speed-lines not-found__panel">
+      <h1>404</h1>
+      <p>This panel doesn't exist.</p>
+      <a class="btn" href="/">Back to the feed</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: flex;
+    justify-content: center;
+    padding-block: 4rem;
+  }
+
+  .not-found__panel {
+    text-align: center;
+    padding: 3rem 3.5rem;
+  }
+
+  .not-found__panel h1 {
+    font-size: 4rem;
+    color: var(--accent);
+  }
+</style>

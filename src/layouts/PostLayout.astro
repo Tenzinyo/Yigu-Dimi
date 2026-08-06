@@ -1,0 +1,117 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import TagList from '../components/TagList.astro';
+
+interface Props {
+  title: string;
+  date: Date;
+  tags: string[];
+  description?: string;
+  cover?: string;
+  coverAlt?: string;
+  badgeLabel: string;
+  badgeClass: string;
+  backHref: string;
+  backLabel: string;
+}
+
+const { title, date, tags, description, cover, coverAlt, badgeLabel, badgeClass, backHref, backLabel } =
+  Astro.props;
+
+const dateLabel = date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout title={title} description={description ?? title} image={cover} type="article">
+  <article class="wrap post">
+    <a href={backHref} class="post__back">&larr; {backLabel}</a>
+
+    <header class="panel post__header speed-lines">
+      <span class:list={['badge', badgeClass]}>{badgeLabel}</span>
+      <h1>{title}</h1>
+      <time datetime={date.toISOString()} class="post__date">{dateLabel}</time>
+      <TagList tags={tags} />
+    </header>
+
+    {cover && <img class="post__cover" src={cover} alt={coverAlt ?? ''} />}
+
+    <div class="panel-flat post__body">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .post {
+    padding-block: 2rem 3rem;
+    max-width: 800px;
+  }
+
+  .post__back {
+    display: inline-block;
+    margin-bottom: 1.25rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .post__header {
+    padding: 1.75rem 1.75rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .post__header h1 {
+    margin-top: 0.5rem;
+  }
+
+  .post__date {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .post__cover {
+    width: 100%;
+    max-height: 480px;
+    object-fit: cover;
+    border: var(--panel-border-width) solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1.5rem;
+  }
+
+  .post__body {
+    padding: 1.75rem 2rem 2.25rem;
+  }
+
+  .post__body :global(h2),
+  .post__body :global(h3) {
+    margin-top: 1.5em;
+  }
+
+  .post__body :global(img) {
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    margin-block: 1rem;
+  }
+
+  .post__body :global(a) {
+    font-weight: 600;
+  }
+
+  .post__body :global(blockquote) {
+    margin: 1.25rem 0;
+    padding: 0.25rem 1.25rem;
+    border-left: 4px solid var(--accent);
+    color: var(--text-muted);
+  }
+
+  .post__body :global(pre) {
+    padding: 1rem;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    overflow-x: auto;
+  }
+</style>

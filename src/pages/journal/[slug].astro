@@ -1,0 +1,32 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import PostLayout from '../../layouts/PostLayout.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('journal', ({ data }) => !data.draft);
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+interface Props {
+  entry: CollectionEntry<'journal'>;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const description = entry.data.mood ? `Mood: ${entry.data.mood}` : entry.data.title;
+---
+
+<PostLayout
+  title={entry.data.title}
+  date={entry.data.date}
+  tags={entry.data.tags}
+  description={description}
+  cover={entry.data.cover}
+  coverAlt={entry.data.coverAlt}
+  badgeLabel="Journal"
+  badgeClass="badge-journal"
+  backHref="/journal/"
+  backLabel="All journal entries"
+>
+  <Content />
+</PostLayout>

@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import type { FeedItem } from '../../utils/content';
+
+const entries = (await getCollection('journal', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const items: FeedItem[] = entries.map((e) => ({
+  type: 'journal',
+  slug: e.id,
+  title: e.data.title,
+  date: e.data.date,
+  tags: e.data.tags,
+  excerpt: e.data.mood ? `Mood: ${e.data.mood}` : undefined,
+  image: e.data.cover,
+  imageAlt: e.data.coverAlt,
+  href: `/journal/${e.id}/`,
+}));
+---
+
+<BaseLayout title="Journal" description="Day-to-day journal entries on Yigu Dimi.">
+  <section class="wrap page-section">
+    <h1>Journal</h1>
+    {items.length > 0 ? (
+      <div class="grid">
+        {items.map((item) => <PostCard item={item} />)}
+      </div>
+    ) : (
+      <p class="empty-state">No entries yet.</p>
+    )}
+  </section>
+</BaseLayout>
+
+<style>
+  .page-section {
+    padding-block: 2.5rem 3rem;
+  }
+  .empty-state {
+    color: var(--text-muted);
+  }
+</style>

@@ -1,0 +1,84 @@
+---
+// Progressive-enhancement filter for a grid of PostCards on the same page.
+// Cards carry data-type on their <article>; this just toggles visibility,
+// so the full feed still works with JS disabled.
+interface Props {
+  targetId: string;
+}
+
+const { targetId } = Astro.props;
+
+const filters: { value: string; label: string }[] = [
+  { value: 'all', label: 'All' },
+  { value: 'blog', label: 'Blog' },
+  { value: 'journal', label: 'Journal' },
+  { value: 'video', label: 'Video' },
+  { value: 'art', label: 'Art' },
+];
+---
+
+<div class="filter-bar" role="group" aria-label="Filter by content type" data-target={targetId}>
+  {
+    filters.map((f, i) => (
+      <button type="button" class="filter-btn" data-filter={f.value} aria-pressed={i === 0 ? 'true' : 'false'}>
+        {f.label}
+      </button>
+    ))
+  }
+</div>
+
+<style>
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-btn {
+    font-family: var(--font-display);
+    letter-spacing: 0.02em;
+    font-size: 0.95rem;
+    padding: 0.4em 0.9em;
+    border: 2px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-card);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .filter-btn:hover {
+    background: var(--accent-soft);
+  }
+
+  .filter-btn[aria-pressed='true'] {
+    background: var(--accent);
+    color: var(--accent-contrast);
+    border-color: var(--border);
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    document.querySelectorAll('.filter-bar').forEach(function (bar) {
+      var targetId = bar.getAttribute('data-target');
+      var target = targetId ? document.getElementById(targetId) : null;
+      if (!target) return;
+      var cards = target.querySelectorAll('[data-type]');
+      var buttons = bar.querySelectorAll('.filter-btn');
+
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var filter = btn.getAttribute('data-filter');
+          buttons.forEach(function (b) {
+            b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+          });
+          cards.forEach(function (card) {
+            var show = filter === 'all' || card.getAttribute('data-type') === filter;
+            card.style.display = show ? '' : 'none';
+          });
+        });
+      });
+    });
+  })();
+</script>

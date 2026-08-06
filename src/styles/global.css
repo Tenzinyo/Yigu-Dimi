@@ -1,0 +1,366 @@
+/* ==========================================================================
+   Yigu Dimi — design tokens & manga-panel visual system
+   Fonts (Bangers, Inter) are loaded via <link> tags in BaseHead.astro —
+   this file only references the resulting font-family stacks.
+   ========================================================================== */
+
+:root {
+  /* --- brand palette (source of truth — do not hardcode these hexes elsewhere) --- */
+  --color-cream: #fff7eb;
+  --color-parchment: #f9f0e0;
+  --color-sage: #a2ab73;
+  --color-sage-deep: #696f4b; /* darkened sage — AA-safe for text/links on cream */
+  --color-crimson: #cc3a63;
+  --color-crimson-deep: #a8274c; /* darkened crimson — AA-safe for small body text */
+  --color-ink: #201a17; /* near-black, warm — borders & body text */
+
+  /* --- semantic tokens (light theme, default) --- */
+  --bg: var(--color-cream);
+  --bg-card: var(--color-parchment);
+  --bg-inset: #f2e6cf;
+  --text: var(--color-ink);
+  --text-muted: #55504a;
+  --border: var(--color-ink);
+  --accent: var(--color-crimson);
+  --accent-contrast: #fff7eb;
+  --accent-soft: var(--color-sage);
+  --link: var(--color-sage-deep);
+  --link-hover: var(--color-crimson-deep);
+  --focus-ring: var(--color-crimson);
+  --shadow-ink: var(--color-ink);
+
+  /* --- type --- */
+  --font-display: "Bangers", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+
+  /* --- misc --- */
+  --panel-border-width: 3px;
+  --panel-shadow-offset: 6px;
+  --radius: 3px;
+  --content-width: 1100px;
+}
+
+/* Dark theme — derived from the same crimson/sage accents, applied via
+   data-theme="dark" on <html>, toggled by ThemeToggle.astro and persisted
+   in localStorage. Not a full re-skin: same shapes, inverted ground. */
+:root[data-theme="dark"] {
+  --bg: #17130f;
+  --bg-card: #221c16;
+  --bg-inset: #2b241c;
+  --text: #f3ece0;
+  --text-muted: #c9bfae;
+  --border: #f3ece0;
+  --accent: #ff6b8f;
+  --accent-contrast: #17130f;
+  --accent-soft: #c3ce94;
+  --link: #c3ce94;
+  --link-hover: #ff6b8f;
+  --focus-ring: #ff6b8f;
+  --shadow-ink: #000000;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) {
+    --bg: #17130f;
+    --bg-card: #221c16;
+    --bg-inset: #2b241c;
+    --text: #f3ece0;
+    --text-muted: #c9bfae;
+    --border: #f3ece0;
+    --accent: #ff6b8f;
+    --accent-contrast: #17130f;
+    --accent-soft: #c3ce94;
+    --link: #c3ce94;
+    --link-hover: #ff6b8f;
+    --focus-ring: #ff6b8f;
+    --shadow-ink: #000000;
+  }
+}
+
+/* ==========================================================================
+   Reset
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light dark;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: var(--link);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  color: var(--link-hover);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+  margin: 0 0 0.5em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(2.2rem, 6vw, 3.75rem);
+}
+
+h2 {
+  font-size: clamp(1.6rem, 4vw, 2.5rem);
+}
+
+h3 {
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--content-width);
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ==========================================================================
+   Manga panel system
+   ========================================================================== */
+
+/* Base "inked panel" treatment: thick border + hard drop shadow, like a
+   comic panel cut out and pasted onto the page. */
+.panel {
+  background: var(--bg-card);
+  border: var(--panel-border-width) solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--panel-shadow-offset) var(--panel-shadow-offset) 0 0 var(--shadow-ink);
+}
+
+.panel-flat {
+  background: var(--bg-card);
+  border: var(--panel-border-width) solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* Halftone dot texture — overlay on hero sections / panel headers. Kept at
+   low opacity so it reads as texture, not noise, and never sits under body
+   copy (contrast would suffer). */
+.halftone {
+  position: relative;
+  isolation: isolate;
+}
+
+.halftone::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(currentColor 1.4px, transparent 1.6px);
+  background-size: 10px 10px;
+  color: var(--border);
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Screentone shading — diagonal line texture for a flat "shaded" comic look,
+   useful on tags/badges or section dividers. */
+.screentone {
+  background-image: repeating-linear-gradient(
+    45deg,
+    color-mix(in srgb, var(--border) 14%, transparent) 0,
+    color-mix(in srgb, var(--border) 14%, transparent) 1.5px,
+    transparent 1.5px,
+    transparent 6px
+  );
+}
+
+/* Speed-line accent for hero sections — radiating lines fading toward the
+   center so text stays legible. Decorative only; safe to ignore for a11y. */
+.speed-lines {
+  position: relative;
+  overflow: hidden;
+}
+
+.speed-lines::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background-image: repeating-conic-gradient(
+    from 0deg,
+    color-mix(in srgb, var(--border) 10%, transparent) 0deg 1.2deg,
+    transparent 1.2deg 6deg
+  );
+  mask-image: radial-gradient(circle at center, transparent 18%, black 68%);
+  -webkit-mask-image: radial-gradient(circle at center, transparent 18%, black 68%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.speed-lines > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   Buttons, tags, badges
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-family: var(--font-display);
+  letter-spacing: 0.03em;
+  font-size: 1.05rem;
+  padding: 0.55em 1.1em;
+  border: var(--panel-border-width) solid var(--border);
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  text-decoration: none;
+  box-shadow: 4px 4px 0 0 var(--shadow-ink);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.btn:hover {
+  color: var(--accent-contrast);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 0 var(--shadow-ink);
+}
+
+.btn:active {
+  transform: translate(0, 0);
+  box-shadow: 2px 2px 0 0 var(--shadow-ink);
+}
+
+.btn-secondary {
+  background: var(--accent-soft);
+  color: var(--color-ink);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  box-shadow: none;
+}
+
+.tag {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.2em 0.65em;
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--color-ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.tag:hover {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.15em 0.6em;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+
+.badge-blog {
+  background: var(--color-sage);
+}
+
+.badge-journal {
+  background: var(--bg-inset);
+}
+
+.badge-video {
+  background: var(--color-crimson);
+  color: #fff7eb;
+}
+
+.badge-art {
+  background: var(--accent-soft);
+}
+
+/* ==========================================================================
+   Grid
+   ========================================================================== */
+
+.grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.grid-gallery {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+@media (max-width: 600px) {
+  .panel {
+    box-shadow: 4px 4px 0 0 var(--shadow-ink);
+  }
+}

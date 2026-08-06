@@ -1,0 +1,92 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TagList from '../../components/TagList.astro';
+import Lightbox from '../../components/Lightbox.astro';
+
+const entries = (await getCollection('art', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+
+<BaseLayout title="Art" description="Art gallery on Yigu Dimi.">
+  <section class="wrap page-section">
+    <h1>Art</h1>
+    {entries.length > 0 ? (
+      <div class="grid-gallery">
+        {entries.map((entry) => (
+          <figure class="panel gallery-item">
+            <button
+              type="button"
+              class="gallery-item__trigger"
+              data-lightbox-trigger
+              data-full={entry.data.image}
+              data-alt={entry.data.imageAlt}
+              data-caption={entry.data.caption ?? entry.data.title}
+            >
+              <img src={entry.data.image} alt={entry.data.imageAlt} loading="lazy" />
+            </button>
+            <figcaption class="gallery-item__caption">
+              <a href={`/art/${entry.id}/`}>{entry.data.title}</a>
+              <TagList tags={entry.data.tags} />
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    ) : (
+      <p class="empty-state">No art posted yet.</p>
+    )}
+  </section>
+
+  <Lightbox />
+</BaseLayout>
+
+<style>
+  .page-section {
+    padding-block: 2.5rem 3rem;
+  }
+
+  .empty-state {
+    color: var(--text-muted);
+  }
+
+  .gallery-item {
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .gallery-item__trigger {
+    display: block;
+    padding: 0;
+    border: none;
+    border-bottom: var(--panel-border-width) solid var(--border);
+    background: none;
+    cursor: zoom-in;
+    width: 100%;
+  }
+
+  .gallery-item__trigger img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+
+  .gallery-item__caption {
+    padding: 0.75rem 0.9rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .gallery-item__caption a {
+    display: block;
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+    margin-bottom: 0.35rem;
+  }
+
+  .gallery-item__caption a:hover {
+    color: var(--accent);
+  }
+</style>

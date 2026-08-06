@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getFeed, getAllTags } from '../../utils/content';
+
+export async function getStaticPaths() {
+  const feed = await getFeed();
+  const tags = getAllTags(feed);
+  return tags.map((tag) => ({
+    params: { tag },
+    props: { items: feed.filter((item) => item.tags.includes(tag)) },
+  }));
+}
+
+interface Props {
+  items: Awaited<ReturnType<typeof getFeed>>;
+}
+
+const { tag } = Astro.params;
+const { items } = Astro.props;
+---
+
+<BaseLayout title={`#${tag}`} description={`Everything tagged "${tag}" on Yigu Dimi.`}>
+  <section class="wrap page-section">
+    <h1>#{tag}</h1>
+    <div class="grid">
+      {items.map((item) => <PostCard item={item} />)}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-section {
+    padding-block: 2.5rem 3rem;
+  }
+</style>

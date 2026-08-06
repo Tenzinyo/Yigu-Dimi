@@ -1,0 +1,142 @@
+---
+// Single <dialog>-based lightbox shared by every [data-lightbox-trigger] on
+// the page (see art/index.astro). Native <dialog> gives us focus trapping
+// and Escape-to-close for free.
+---
+
+<dialog id="lightbox" class="lightbox" aria-label="Image viewer">
+  <button type="button" class="lightbox__close" aria-label="Close">&times;</button>
+  <button type="button" class="lightbox__nav lightbox__prev" aria-label="Previous image">&lsaquo;</button>
+  <figure class="lightbox__figure">
+    <img class="lightbox__img" src="" alt="" />
+    <figcaption class="lightbox__caption"></figcaption>
+  </figure>
+  <button type="button" class="lightbox__nav lightbox__next" aria-label="Next image">&rsaquo;</button>
+</dialog>
+
+<style>
+  .lightbox {
+    border: var(--panel-border-width) solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    color: var(--text);
+    max-width: min(90vw, 900px);
+    padding: 1.5rem;
+  }
+
+  .lightbox::backdrop {
+    background: rgba(0, 0, 0, 0.75);
+  }
+
+  .lightbox__figure {
+    margin: 0;
+  }
+
+  .lightbox__img {
+    max-height: 70vh;
+    margin-inline: auto;
+    border: 2px solid var(--border);
+  }
+
+  .lightbox__caption {
+    margin-top: 0.75rem;
+    text-align: center;
+    color: var(--text-muted);
+  }
+
+  .lightbox__close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.75rem;
+    font-size: 1.75rem;
+    line-height: 1;
+    background: none;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .lightbox__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2.5rem;
+    line-height: 1;
+    background: none;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    padding: 0.25rem 0.6rem;
+  }
+
+  .lightbox__nav:hover,
+  .lightbox__close:hover {
+    color: var(--accent);
+  }
+
+  .lightbox__prev {
+    left: 0.25rem;
+  }
+
+  .lightbox__next {
+    right: 0.25rem;
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var dialog = document.getElementById('lightbox');
+    if (!dialog) return;
+
+    var img = dialog.querySelector('.lightbox__img');
+    var caption = dialog.querySelector('.lightbox__caption');
+    var closeBtn = dialog.querySelector('.lightbox__close');
+    var prevBtn = dialog.querySelector('.lightbox__prev');
+    var nextBtn = dialog.querySelector('.lightbox__next');
+
+    var triggers = Array.prototype.slice.call(document.querySelectorAll('[data-lightbox-trigger]'));
+    var current = 0;
+
+    function show(i) {
+      current = (i + triggers.length) % triggers.length;
+      var t = triggers[current];
+      img.src = t.getAttribute('data-full') || t.getAttribute('src') || '';
+      img.alt = t.getAttribute('data-alt') || '';
+      caption.textContent = t.getAttribute('data-caption') || '';
+    }
+
+    triggers.forEach(function (t, i) {
+      t.addEventListener('click', function (e) {
+        e.preventDefault();
+        show(i);
+        dialog.showModal();
+      });
+    });
+
+    closeBtn.addEventListener('click', function () {
+      dialog.close();
+    });
+
+    prevBtn.addEventListener('click', function () {
+      show(current - 1);
+    });
+
+    nextBtn.addEventListener('click', function () {
+      show(current + 1);
+    });
+
+    dialog.addEventListener('click', function (e) {
+      if (e.target === dialog) dialog.close();
+    });
+
+    dialog.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft') show(current - 1);
+      if (e.key === 'ArrowRight') show(current + 1);
+    });
+
+    if (triggers.length === 0) {
+      prevBtn.style.display = 'none';
+      nextBtn.style.display = 'none';
+    }
+  })();
+</script>

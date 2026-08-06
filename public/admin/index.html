@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Yigu Dimi — Admin</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <!-- Netlify Identity: handles login, and invite-only access (no public
+         signup — see README for how the single-user login is configured). -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <script>
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on('init', (user) => {
+          if (!user) {
+            window.netlifyIdentity.on('login', () => {
+              document.location.href = '/admin/';
+            });
+          }
+        });
+      }
+    </script>
+
+    <!-- Decap CMS (the maintained fork of Netlify CMS) -->
+    <script src="https://unpkg.com/decap-cms@^3.1.3/dist/decap-cms.js"></script>
+  </body>
+</html>

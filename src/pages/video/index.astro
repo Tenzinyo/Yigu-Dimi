@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import type { FeedItem } from '../../utils/content';
+
+const entries = (await getCollection('video', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const items: FeedItem[] = entries.map((e) => ({
+  type: 'video',
+  slug: e.id,
+  title: e.data.title,
+  date: e.data.date,
+  tags: e.data.tags,
+  excerpt: e.data.description,
+  image: e.data.thumbnail,
+  imageAlt: e.data.thumbnailAlt,
+  href: `/video/${e.id}/`,
+}));
+---
+
+<BaseLayout title="Video" description="Video posts on Yigu Dimi.">
+  <section class="wrap page-section">
+    <h1>Video</h1>
+    {items.length > 0 ? (
+      <div class="grid">
+        {items.map((item) => <PostCard item={item} />)}
+      </div>
+    ) : (
+      <p class="empty-state">No videos yet.</p>
+    )}
+  </section>
+</BaseLayout>
+
+<style>
+  .page-section {
+    padding-block: 2.5rem 3rem;
+  }
+  .empty-state {
+    color: var(--text-muted);
+  }
+</style>
