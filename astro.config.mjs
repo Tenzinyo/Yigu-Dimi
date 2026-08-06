@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 
 // Update this once you know your live URL (Netlify default, or your custom domain later).
 // It matters for the sitemap, RSS feed, and canonical/OG tags.
-const SITE_URL = 'https://yigu-dimi.netlify.app';
+const SITE_URL = 'https://yigudimi.netlify.app';
 
 export default defineConfig({
   site: SITE_URL,
