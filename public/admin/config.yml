@@ -8,8 +8,8 @@ publish_mode: simple
 media_folder: "public/images/uploads"
 public_folder: "/images/uploads"
 
-site_url: https://yigu-dimi.netlify.app
-display_url: https://yigu-dimi.netlify.app
+site_url: https://yigudimi.netlify.app
+display_url: https://yigudimi.netlify.app
 logo_url: /favicon.svg
 
 collections:
