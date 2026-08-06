@@ -4,7 +4,7 @@ date: 2026-08-06T15:52:00.000-04:00
 tags:
   - AI
 description: Are we becoming irrelevant to the very system we created ourselves?
-cover: ""
+cover: /images/uploads/screenshot-2026-08-06-at-4.29.09 pm.png
 draft: false
 ---
 Okay so where do I start.. 
