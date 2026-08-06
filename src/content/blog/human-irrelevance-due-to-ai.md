@@ -3,7 +3,7 @@ title: Human Irrelevance due to AI 
 date: 2026-08-06T15:52:00.000-04:00
 tags:
   - AI
-description: Are we becoming irrelevant to the very system we created ourselves?
+description: Are we becoming irrelevant due to the very system we created ourselves?
 cover: /images/uploads/screenshot-2026-08-06-at-4.29.09 pm.png
 draft: false
 ---
