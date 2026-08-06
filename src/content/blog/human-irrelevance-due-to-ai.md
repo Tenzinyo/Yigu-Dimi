@@ -4,6 +4,7 @@ date: 2026-08-06T15:52:00.000-04:00
 tags:
   - AI
 description: Are we becoming irrelevant to the very system we created ourselves?
+cover: https://www.dreamstime.com/photos-images/ai-vs-human.html
 draft: false
 ---
 Okay so where do I start.. 
